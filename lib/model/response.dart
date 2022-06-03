@@ -1,7 +1,7 @@
 class Products {
-  final int id;
-  final String name;
-  final String price;
+  final int? id;
+  final String? name;
+  final String? price;
 
   Products({this.id, this.name, this.price});
 
@@ -11,13 +11,13 @@ class Products {
 }
 
 class CustomersModel {
-  final int id;
-  final String email;
-  final String firstName;
-  final String lastName;
-  final String username;
-  final String role;
-  final String password;
+  final int? id;
+  final String? email;
+  final String? firstName;
+  final String? lastName;
+  final String? username;
+  final String? role;
+  final String? password;
 
   CustomersModel({this.id, this.email, this.firstName, this.lastName, this.username, this.role, this.password});
 
@@ -37,10 +37,10 @@ class CustomersModel {
 }
 
 class Category {
-  final int id;
-  final String name;
-  final String display;
-  final int parent;
+  final int? id;
+  final String? name;
+  final String? display;
+  final int? parent;
 
   Category({this.id, this.name, this.display, this.parent});
 

@@ -1,14 +1,13 @@
 import 'dart:convert';
 import 'dart:math' as math;
 
+import 'package:crunchbox/colors.dart';
+import 'package:crunchbox/creds/creds.dart';
 import 'package:crunchbox/login.dart';
 import 'package:crunchbox/model/response.dart';
 import 'package:crunchbox/myaccount.dart';
+import 'package:crunchbox/utils/cut_corners_border.dart';
 import 'package:flutter/material.dart';
-
-import 'package:crunchbox/colors.dart';
-import 'package:crunchbox/cut_corners_border.dart';
-
 import 'package:http/http.dart' as http;
 
 void main() => runApp(MyApp());
@@ -28,9 +27,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, this.title}) : super(key: key);
 
-  final String title;
+  final String? title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -38,11 +37,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // Woocommerce Api
-  final baseUrl = "https://crworld.xyz/wp-json/wc/v3/";
-  final consumerKey =
-      "consumer_key=ck_a6dd2423f9846648d5943da635f6f1335ad812e4";
-  final consumerSecret =
-      "&consumer_secret=cs_58abf2aacfcc931a1b864df17ae727e522532821";
+  ManageCredentials creds = ManageCredentials();
+
   final endpointCategory = "products/categories?";
   final categoryAttributesPerPage = "&per_page=15";
   final categoryAttributesSubCat = "&parent=30";
@@ -53,8 +49,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // HTTP Call to fetch Products
   Future<List<Products>> getAllProducts() async {
-    final response = await http
-        .get(baseUrl + endpointProducts + consumerKey + consumerSecret);
+    final response = await http.get(Uri.parse(creds.baseUrl +
+        endpointProducts +
+        creds.consumerKey +
+        creds.consumerSecret));
     if (response.statusCode == 200) {
       return productsList = (json.decode(response.body) as List)
           .map((json) => Products.fromJson(json))
@@ -66,11 +64,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // HTTP Call to fetch categories
   Future<List<Category>> getAllCategory() async {
-    final response = await http.get(baseUrl +
+    final response = await http.get(Uri.parse(creds.baseUrl +
         endpointCategory +
-        consumerKey +
-        consumerSecret +
-        categoryAttributesPerPage);
+        creds.consumerKey +
+        creds.consumerSecret +
+        categoryAttributesPerPage));
     if (response.statusCode == 200) {
       return categoryList = (json.decode(response.body) as List)
           .map((json) => Category.fromJson(json))
@@ -91,12 +89,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return FutureBuilder(
         future: getAllProducts(),
         builder: (context, snapshots) {
-
           if (snapshots.hasError) {
             return Center(child: Text('Error: ${snapshots.error}'));
           } else if (snapshots.hasData) {
             return GridView.builder(
-                itemCount: productsList == null ? 0 : productsList.length,
+                itemCount: productsList.isEmpty ? 0 : productsList.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2),
                 itemBuilder: (context, index) {
@@ -105,14 +102,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: ListTile(
                       onTap: () {},
                       leading: Icon(Icons.fastfood),
-                      title: Text(snapshots.data[index].name),
-                      subtitle: Text('₹ ${snapshots.data[index].price}'),
+                      title: Text(snapshots.data![index].name!),
+                      subtitle: Text('₹ ${snapshots.data![index].price}'),
                     ),
                   );
                 });
           } else if (snapshots.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           }
+          return Container();
           /*
               return ListView.builder(
                   itemCount: productsList.length,
@@ -138,7 +136,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Drawer with categories
   Drawer buildDrawer() {
-
     return Drawer(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -178,15 +175,17 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      FlatButton(
+                      MaterialButton(
                         shape: Border.all(
                             width: 1.0,
                             style: BorderStyle.solid,
                             color: kShrineAltYellow),
                         colorBrightness: Brightness.dark,
                         onPressed: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => LoginPage()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginPage()));
                         },
                         child: Text(
                           'Log In',
@@ -209,9 +208,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 if (snapshot.hasError) return Text('Error: ${snapshot.error}');
                 switch (snapshot.connectionState) {
                   case ConnectionState.active:
-                    return null;
+                    return Container();
                   case ConnectionState.none:
-                    return null;
+                    return Container();
                   case ConnectionState.waiting:
                     return Center(child: CircularProgressIndicator());
                   case ConnectionState.done:
@@ -220,15 +219,16 @@ class _MyHomePageState extends State<MyHomePage> {
                       itemCount: categoryList.length,
                       itemBuilder: (context, index) {
                         return ListTile(
-                          title: Text(snapshot.data[index].name),
+                          title: Text((snapshot.data as dynamic)[index].name),
                           leading: Icon(Icons.category),
                           onTap: () {
-                            print(snapshot.data[index].name);
+                            print((snapshot.data as dynamic)[index].name);
                           },
                         );
                       },
                     );
                 }
+                //return Container();
               },
             ),
           ),
@@ -244,11 +244,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       key: _openDrawer,
       appBar: AppBar(
-        leading: IconButton(icon: Icon(Icons.restaurant_menu), onPressed: () {
-          _openDrawer.currentState.openDrawer();
-        }),
+        leading: IconButton(
+            icon: Icon(Icons.restaurant_menu),
+            onPressed: () {
+              _openDrawer.currentState!.openDrawer();
+            }),
         title: Text(
-          widget.title,
+          widget.title!,
           style: TextStyle(
             fontFamily: 'Beyno',
             color: kShrineAltYellow,
@@ -256,9 +258,16 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.account_circle), onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => MyAccount()));
-          })
+          IconButton(
+              icon: Icon(Icons.account_circle),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MyAccount(
+                              id: null,
+                            )));
+              })
         ],
         centerTitle: true,
       ),
@@ -269,37 +278,34 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-
 // Custom Theme
 
 ThemeData _buildShrineTheme() {
   final ThemeData base = ThemeData.dark();
   return base.copyWith(
-    accentColor: kShrineAltDarkGrey,
     primaryColor: kShrineAltDarkGrey,
-    buttonColor: kShrineAltYellow,
     scaffoldBackgroundColor: kShrineAltDarkGrey,
     cardColor: kShrineAltDarkGrey,
-    textSelectionColor: kShrinePink100,
     errorColor: kShrineErrorRed,
     textTheme: _buildShrineTextTheme(base.textTheme),
     primaryTextTheme: _buildShrineTextTheme(base.primaryTextTheme),
-    accentTextTheme: _buildShrineTextTheme(base.accentTextTheme),
     primaryIconTheme: base.iconTheme.copyWith(color: kShrineAltYellow),
     inputDecorationTheme: InputDecorationTheme(
       border: CutCornersBorder(),
     ),
+    colorScheme:
+        ColorScheme.fromSwatch().copyWith(secondary: kShrineAltDarkGrey),
   );
 }
 
 TextTheme _buildShrineTextTheme(TextTheme base) {
   return base
       .copyWith(
-        headline: base.headline.copyWith(
+        headline5: base.headline5!.copyWith(
           fontWeight: FontWeight.w500,
         ),
-        title: base.title.copyWith(fontSize: 18.0),
-        caption: base.caption.copyWith(
+        subtitle1: base.subtitle1!.copyWith(fontSize: 18.0),
+        caption: base.caption!.copyWith(
           fontWeight: FontWeight.w400,
           fontSize: 14.0,
         ),

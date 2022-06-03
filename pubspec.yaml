@@ -10,7 +10,7 @@ description: World of taste
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   flutter:
@@ -18,10 +18,10 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
-  font_awesome_flutter: ^8.2.0
-  http: ^0.12.0
-  animated_text_kit: ^1.2.0
+  cupertino_icons: ^1.0.4
+  font_awesome_flutter: ^9.2.0
+  http: ^0.13.4
+  animated_text_kit: ^4.2.1
 
 dev_dependencies:
   flutter_test:

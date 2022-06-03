@@ -1,11 +1,12 @@
 import 'dart:convert';
 
-import 'package:crunchbox/create_account.dart';
-import 'package:crunchbox/model/response.dart';
-import 'package:flutter/material.dart';
 import 'package:crunchbox/colors.dart';
+import 'package:crunchbox/create_account.dart';
+import 'package:crunchbox/creds/creds.dart';
+import 'package:crunchbox/model/response.dart';
 import 'package:crunchbox/myaccount.dart';
-
+import 'package:crunchbox/utils/accentColorOverride.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class LoginPage extends StatefulWidget {
@@ -14,11 +15,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final baseUrl = "https://crworld.xyz/wp-json/wc/v3/";
-  final consumerKey =
-      "consumer_key=ck_a6dd2423f9846648d5943da635f6f1335ad812e4";
-  final consumerSecret =
-      "&consumer_secret=cs_58abf2aacfcc931a1b864df17ae727e522532821";
+  ManageCredentials creds = ManageCredentials();
 
   final loginEndpoint = 'customers?';
 
@@ -28,8 +25,10 @@ class _LoginPageState extends State<LoginPage> {
   List<CustomersModel> listOfCustomers = [];
 
   Future<List<CustomersModel>> login(String email, String password) async {
-    final response =
-        await http.get(baseUrl + loginEndpoint + consumerKey + consumerSecret);
+    final response = await http.get(Uri.parse(creds.baseUrl +
+        loginEndpoint +
+        creds.consumerKey +
+        creds.consumerSecret));
     if (response.statusCode == 200) {
       listOfCustomers = (json.decode(response.body) as List)
           .map((json) => CustomersModel.fromJson(json))
@@ -38,20 +37,21 @@ class _LoginPageState extends State<LoginPage> {
 
       for (var i in listOfCustomers.map((data) {
         if (email == data.email) {
-          int customerId = data.id;
+          int? customerId = data.id;
           print('Email Matched ${data.id}');
-          Future<CustomersModel> getCustomerData() async {
-            final res = await http.get(baseUrl +
+          Future<CustomersModel?> getCustomerData() async {
+            final res = await http.get(Uri.parse(creds.baseUrl +
                 'customers/$customerId?' +
-                consumerKey +
-                consumerSecret);
+                creds.consumerKey +
+                creds.consumerSecret));
             if (res.statusCode == 200) {
               var jsonData = json.decode(res.body);
-              int id = jsonData['id'];
+              int? id = jsonData['id'];
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => MyAccount(id: id)));
               print(jsonData);
             }
+            return null;
           }
 
           getCustomerData();
@@ -98,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           ButtonBar(
             children: <Widget>[
-              FlatButton(
+              MaterialButton(
                   shape: BeveledRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(7.0))),
                   onPressed: () {
@@ -110,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
                     'Cancel',
                     style: TextStyle(fontFamily: 'Beyno'),
                   )),
-              RaisedButton(
+              MaterialButton(
                   color: kShrineAltYellow,
                   textColor: kShrineBrown900,
                   shape: BeveledRectangleBorder(
@@ -140,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           ButtonBar(
             children: <Widget>[
-              RaisedButton(
+              MaterialButton(
                 color: kShrineAltDarkGrey,
                 shape: BeveledRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(7.0))),
@@ -159,22 +159,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class AccentColorOverride extends StatelessWidget {
-  const AccentColorOverride({Key key, this.color, this.child})
-      : super(key: key);
-
-  final Color color;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Theme(
-      child: child,
-      data: Theme.of(context).copyWith(accentColor: color),
     );
   }
 }

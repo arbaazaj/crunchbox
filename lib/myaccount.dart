@@ -1,14 +1,14 @@
-import 'package:crunchbox/customers.dart';
-import 'package:flutter/material.dart';
-import 'package:crunchbox/colors.dart';
-
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class MyAccount extends StatefulWidget {
-  final int id;
+import 'package:crunchbox/colors.dart';
+import 'package:crunchbox/customers.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-  MyAccount({Key key, @required this.id}) : super(key: key);
+class MyAccount extends StatefulWidget {
+  final int? id;
+
+  MyAccount({Key? key, required this.id}) : super(key: key);
 
   @override
   MyAccountState createState() {
@@ -24,8 +24,8 @@ class MyAccountState extends State<MyAccount> {
       "&consumer_secret=cs_58abf2aacfcc931a1b864df17ae727e522532821";
 
   Future getCustomerProfile() async {
-    final res = await http.get(
-        baseUrl + 'customers/${widget.id}?' + consumerKey + consumerSecret);
+    final res = await http.get(Uri.parse(
+        baseUrl + 'customers/${widget.id}?' + consumerKey + consumerSecret));
     if (res.statusCode == 200) {
       var jsonData = json.decode(res.body);
       print(jsonData['first_name']);
@@ -71,16 +71,17 @@ class MyAccountState extends State<MyAccount> {
               future: getCustomerProfile(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                  return Text(snapshot.error);
-                } else if (snapshot.hasData) {
-                  return Text(
-                      '${snapshot.data['first_name']} ${snapshot.data['last_name']}',
-                      style: TextStyle(fontSize: 24.0, fontFamily: 'Beyno'));
+                  return Text(snapshot.error as String);
+                } else if (snapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  return Center(
+                      child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(kShrineAltYellow)));
                 }
-                return Center(
-                    child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(kShrineAltYellow)));
+                return Text(
+                    '${(snapshot.data as dynamic)['first_name']} ${(snapshot.data as dynamic)['last_name']}',
+                    style: TextStyle(fontSize: 24.0, fontFamily: 'Beyno'));
               },
             ),
             SizedBox(height: 16.0),

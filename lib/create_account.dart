@@ -1,5 +1,6 @@
 import 'package:crunchbox/colors.dart';
-import 'package:crunchbox/login.dart';
+import 'package:crunchbox/creds/creds.dart';
+import 'package:crunchbox/utils/accentColorOverride.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -9,6 +10,8 @@ class CreateAccount extends StatefulWidget {
 }
 
 class _CreateAccountState extends State<CreateAccount> {
+  ManageCredentials creds = ManageCredentials();
+
   bool accountCreated = false;
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
@@ -16,11 +19,6 @@ class _CreateAccountState extends State<CreateAccount> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  final baseUrl = "https://crworld.xyz/wp-json/wc/v3/";
-  final consumerKey =
-      "consumer_key=ck_a6dd2423f9846648d5943da635f6f1335ad812e4";
-  final consumerSecret =
-      "&consumer_secret=cs_58abf2aacfcc931a1b864df17ae727e522532821";
   final customersEndpoint = 'customers?';
 
   Future createAccount() async {
@@ -33,7 +31,10 @@ class _CreateAccountState extends State<CreateAccount> {
     };
 
     final req = await http.post(
-        baseUrl + customersEndpoint + consumerKey + consumerSecret,
+        Uri.parse(creds.baseUrl +
+            customersEndpoint +
+            creds.consumerKey +
+            creds.consumerSecret),
         body: data,
         headers: {
           "Accept": "application/json",
@@ -124,7 +125,7 @@ class _CreateAccountState extends State<CreateAccount> {
                   ),
                 ),
                 SizedBox(height: 16.0),
-                RaisedButton(
+                MaterialButton(
                     padding: EdgeInsets.all(8.0),
                     color: kShrineAltYellow,
                     textColor: kShrineBrown900,
@@ -146,10 +147,11 @@ class _CreateAccountState extends State<CreateAccount> {
                           future: createAccount(),
                           builder: (context, snapshot) {
                             if (snapshot.hasError) {
-                              return Text(snapshot.error);
-                            } else if (snapshot.hasData) {
-                              Scaffold.of(context).showSnackBar(SnackBar(content: Text('Account Done')));
+                              return Text(snapshot.error as String);
                             }
+                            return ScaffoldMessenger(
+                                child:
+                                    SnackBar(content: Text('Account Done!')));
                           });
                     }),
               ],
