@@ -1,8 +1,6 @@
-# crunchbox
+# Crunch Box -World of taste
 
-World of taste
+A food booking and home delivery app built in flutter and using woocommerce as a backend.
 
-## Getting Started
-
-For help getting started with Flutter, view our online
-[documentation](https://flutter.io/).
+Official website for the app is:
+[I Love Coding](https://ilovecoding.site/store).
