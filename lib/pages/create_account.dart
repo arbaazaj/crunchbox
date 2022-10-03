@@ -1,6 +1,6 @@
-import 'package:crunchbox/colors.dart';
+import 'package:crunchbox/themes/colors.dart';
 import 'package:crunchbox/creds/creds.dart';
-import 'package:crunchbox/utils/accentColorOverride.dart';
+import 'package:crunchbox/utils/accent_color_override.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 

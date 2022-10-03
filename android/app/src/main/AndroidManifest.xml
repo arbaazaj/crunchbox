@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.crunchbox.crunchbox">
    <application
-        android:label="crunchbox"
+        android:label="Crunch Box"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

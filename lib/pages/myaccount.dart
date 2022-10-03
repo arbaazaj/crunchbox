@@ -1,9 +1,12 @@
 import 'dart:convert';
 
-import 'package:crunchbox/colors.dart';
-import 'package:crunchbox/customers.dart';
+import 'package:crunchbox/themes/colors.dart';
+import 'package:crunchbox/pages/customers.dart';
+import 'package:crunchbox/creds/creds.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
+enum AccountSettings { Orders, EditProfile, ManageAddress, Customers }
 
 class MyAccount extends StatefulWidget {
   final int? id;
@@ -17,33 +20,31 @@ class MyAccount extends StatefulWidget {
 }
 
 class MyAccountState extends State<MyAccount> {
-  final baseUrl = "https://crworld.xyz/wp-json/wc/v3/";
-  final consumerKey =
-      "consumer_key=ck_a6dd2423f9846648d5943da635f6f1335ad812e4";
-  final consumerSecret =
-      "&consumer_secret=cs_58abf2aacfcc931a1b864df17ae727e522532821";
+  final ManageCredentials manageCredentials = ManageCredentials();
 
-  Future getCustomerProfile() async {
-    final res = await http.get(Uri.parse(
-        baseUrl + 'customers/${widget.id}?' + consumerKey + consumerSecret));
-    if (res.statusCode == 200) {
-      var jsonData = json.decode(res.body);
-      print(jsonData['first_name']);
-    } else {
-      print(res.statusCode);
-    }
-    return json.decode(res.body);
-  }
+  // TODO: Redundant api call fetch account details from homepage context.
+  // Future getCustomerProfile() async {
+  //   final res = await http.get(Uri.parse(manageCredentials.baseUrl +
+  //       'customers/${widget.id}?' +
+  //       manageCredentials.consumerKey +
+  //       manageCredentials.consumerSecret));
+  //   if (res.statusCode == 200) {
+  //     var jsonData = json.decode(res.body);
+  //     print(jsonData['first_name']);
+  //   } else {
+  //     print(res.statusCode);
+  //   }
+  //   return json.decode(res.body);
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'My Account',
-          style: TextStyle(fontFamily: 'Beyno', color: kShrineAltYellow),
-        ),
+        foregroundColor: kShrineAltYellow,
         centerTitle: true,
+        backgroundColor: kShrineAltDarkGrey,
+        title: Text('My Account', style: TextStyle(fontFamily: 'Beyno')),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -52,6 +53,7 @@ class MyAccountState extends State<MyAccount> {
             SizedBox(
               height: 16.0,
             ),
+            // Profile Image.
             Center(
               child: Container(
                 width: 160.0,
@@ -67,25 +69,27 @@ class MyAccountState extends State<MyAccount> {
               ),
             ),
             SizedBox(height: 16.0),
-            FutureBuilder(
-              future: getCustomerProfile(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Text(snapshot.error as String);
-                } else if (snapshot.connectionState ==
-                    ConnectionState.waiting) {
-                  return Center(
-                      child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(kShrineAltYellow)));
-                }
-                return Text(
-                    '${(snapshot.data as dynamic)['first_name']} ${(snapshot.data as dynamic)['last_name']}',
-                    style: TextStyle(fontSize: 24.0, fontFamily: 'Beyno'));
-              },
-            ),
+            // Account details and setting options. TODO: Uncomment this.
+            // FutureBuilder(
+            //   future: getCustomerProfile(),
+            //   builder: (context, snapshot) {
+            //     if (snapshot.hasError) {
+            //       return Text(snapshot.error as String);
+            //     } else if (snapshot.connectionState ==
+            //         ConnectionState.waiting) {
+            //       return Center(
+            //           child: CircularProgressIndicator(
+            //               valueColor:
+            //                   AlwaysStoppedAnimation<Color>(kShrineAltYellow)));
+            //     }
+            //     return Text(
+            //         '${(snapshot.data as dynamic)['first_name']} ${(snapshot.data as dynamic)['last_name']}',
+            //         style: TextStyle(fontSize: 24.0, fontFamily: 'Beyno'));
+            //   },
+            // ),
             SizedBox(height: 16.0),
             Divider(),
+            // Settings List
             ListTile(
               leading: Icon(
                 Icons.shopping_basket,
@@ -97,7 +101,7 @@ class MyAccountState extends State<MyAccount> {
                 textScaleFactor: 1.3,
               ),
               onTap: () {
-                getCustomerProfile();
+                // TODO: getCustomerProfile();
               },
             ),
             Divider(),
