@@ -1,10 +1,7 @@
-import 'dart:convert';
-
-import 'package:crunchbox/themes/colors.dart';
-import 'package:crunchbox/pages/customers.dart';
 import 'package:crunchbox/creds/creds.dart';
+import 'package:crunchbox/pages/account/customers.dart';
+import 'package:crunchbox/themes/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 enum AccountSettings { Orders, EditProfile, ManageAddress, Customers }
 

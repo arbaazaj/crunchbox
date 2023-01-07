@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:crunchbox/creds/creds.dart';
 import 'package:crunchbox/model/response.dart';
 import 'package:crunchbox/themes/colors.dart';
+import 'package:crunchbox/utils/api_endpoints.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Customers extends StatefulWidget {
   @override
@@ -11,24 +14,22 @@ class Customers extends StatefulWidget {
 class _CustomersState extends State<Customers> {
   final ManageCredentials creds = ManageCredentials();
 
-  final customersEndpoint = 'customers?';
-
   List<CustomersModel> customersList = [];
 
-  // Future<List<CustomersModel>> getAllCustomers() async {
-  //   final res = await http.get(Uri.parse(creds.baseUrl +
-  //       customersEndpoint +
-  //       creds.consumerKey +
-  //       creds.consumerSecret));
-  //
-  //   if (res.statusCode == 200) {
-  //     return customersList = (json.decode(res.body) as List)
-  //         .map((json) => CustomersModel.fromJson(json))
-  //         .toList();
-  //   } else {
-  //     throw Exception('Failed to get customers');
-  //   }
-  // }
+  Future<List<CustomersModel>> getAllCustomers() async {
+    final res = await http.get(Uri.parse(creds.baseUrl +
+        customersEndpoint +
+        creds.consumerKey +
+        creds.consumerSecret));
+
+    if (res.statusCode == 200) {
+      return customersList = (json.decode(res.body) as List)
+          .map((json) => CustomersModel.fromJson(json))
+          .toList();
+    } else {
+      throw Exception('Failed to get customers');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

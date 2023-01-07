@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:crunchbox/creds/creds.dart';
 import 'package:crunchbox/model/response.dart';
-import 'package:crunchbox/pages/create_account.dart';
-import 'package:crunchbox/pages/myaccount.dart';
+import 'package:crunchbox/pages/account/create_account.dart';
+import 'package:crunchbox/pages/account/myaccount.dart';
 import 'package:crunchbox/themes/colors.dart';
 import 'package:crunchbox/utils/accent_color_override.dart';
+import 'package:crunchbox/utils/api_endpoints.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,8 +16,6 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   ManageCredentials creds = ManageCredentials();
-
-  final loginEndpoint = 'customers?';
 
   final emailController = TextEditingController();
   final passController = TextEditingController();
@@ -34,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
           .toList();
       print(response.body);
 
-      for (var i in listOfCustomers.map((data) {
+      listOfCustomers.map((data) {
         if (email == data.email) {
           int? customerId = data.id;
           print('Email Matched ${data.id}');
@@ -55,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
 
           getCustomerData();
         }
-      })) {}
+      });
     } else {
       print(response.body);
     }

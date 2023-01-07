@@ -22,6 +22,8 @@ dependencies:
   font_awesome_flutter: ^10.2.1
   http: ^0.13.5
   animated_text_kit: ^4.2.2
+  get: ^4.6.5
+  get_storage:
 
 dev_dependencies:
   flutter_test:

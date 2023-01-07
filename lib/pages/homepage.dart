@@ -2,10 +2,12 @@ import 'dart:convert';
 
 import 'package:crunchbox/creds/creds.dart';
 import 'package:crunchbox/model/response.dart';
-import 'package:crunchbox/pages/myaccount.dart';
+import 'package:crunchbox/pages/account/myaccount.dart';
 import 'package:crunchbox/themes/colors.dart';
 import 'package:crunchbox/utils/api_endpoints.dart';
+import 'package:crunchbox/widgets/custom_card.dart';
 import 'package:crunchbox/widgets/custom_drawer.dart';
+import 'package:crunchbox/widgets/custom_fab.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -22,22 +24,25 @@ class _HomePageState extends State<HomePage> {
   // Woocommerce Api
   ManageCredentials creds = ManageCredentials();
 
+  // Scroll Controller
+  final ScrollController controller = ScrollController();
+
   // Drawer Global Key initialization.
   final GlobalKey<ScaffoldState> _openDrawer = GlobalKey<ScaffoldState>();
 
   // Empty lists.
-  List<Products> productsList = [];
+  List<Product> productsList = [];
   List<Category> categoryList = [];
 
   // HTTP API call to fetch Products
-  Future<List<Products>> getAllProducts() async {
+  Future<List<Product>> getAllProducts() async {
     final response = await http.get(Uri.parse(creds.baseUrl +
         endpointProducts +
         creds.consumerKey +
         creds.consumerSecret));
     if (response.statusCode == 200) {
       return productsList = (json.decode(response.body) as List)
-          .map((json) => Products.fromJson(json))
+          .map((json) => Product.fromJson(json))
           .toList();
     } else {
       throw Exception('Failed to load products');
@@ -59,30 +64,32 @@ class _HomePageState extends State<HomePage> {
   //     throw Exception('Failed to load categories.');
   //   }
   // }
-  // Future Builder with products
 
+
+  // Future Builder with products
   // Building body with fetched data from api call and
   // representing it in a GridView.builder.
-  FutureBuilder<List<Products>> buildFutureBuilder() {
+  FutureBuilder<List<Product>> buildFutureBuilder() {
     return FutureBuilder(
         future: getAllProducts(),
         builder: (context, snapshots) {
           if (snapshots.hasError) {
-            return Center(child: Text('Error: ${snapshots.error}'));
+            // return Center(child: Text('Error: ${snapshots.error}'));
+            print(snapshots.stackTrace);
           } else if (snapshots.hasData) {
             return GridView.builder(
                 itemCount: productsList.isEmpty ? 0 : productsList.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2),
                 itemBuilder: (context, index) {
+                  var product = snapshots.data![index];
                   return Card(
                     elevation: 8.0,
-                    child: ListTile(
-                      onTap: () {},
-                      leading: Icon(Icons.fastfood),
-                      title: Text(snapshots.data![index].name!),
-                      subtitle: Text('₹ ${snapshots.data![index].price}'),
-                    ),
+                    child: CustomCard(
+                        productID: product.id,
+                        productName: product.name,
+                        snapshots: snapshots,
+                        index: index),
                   );
                 });
           } else if (snapshots.connectionState == ConnectionState.waiting) {
@@ -147,6 +154,11 @@ class _HomePageState extends State<HomePage> {
       ),
       backgroundColor: kShrineAltYellow,
       drawer: CustomDrawer(),
+      floatingActionButton: CustomFAB(
+          onPressed: () {},
+          controller: controller,
+          backgroundColor: kShrineAltYellow,
+          child: Icon(Icons.shopping_cart, color: kShrineAltDarkGrey)),
       body: buildFutureBuilder(),
     );
   }

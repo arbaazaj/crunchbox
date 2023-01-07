@@ -1,6 +1,7 @@
 import 'package:crunchbox/themes/colors.dart';
 import 'package:crunchbox/creds/creds.dart';
 import 'package:crunchbox/utils/accent_color_override.dart';
+import 'package:crunchbox/utils/api_endpoints.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,8 +19,6 @@ class _CreateAccountState extends State<CreateAccount> {
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
-  final customersEndpoint = 'customers?';
 
   Future createAccount() async {
     var data = {

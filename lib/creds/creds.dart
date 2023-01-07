@@ -1,8 +1,8 @@
 // TODO: Change to empty string before committing.
 class ManageCredentials {
 
-  String get baseUrl => "https://crworld.xyz/wp-json/wc/v3/";
-  String get consumerKey => "consumer_key=ck_a6dd2423f9846648d5943da635f6f1335ad812e4";
-  String get consumerSecret => "&consumer_secret=cs_58abf2aacfcc931a1b864df17ae727e522532821";
+  String get baseUrl => "https://ilovecoding.site/wp-json/wc/v3/";
+  String get consumerKey => "consumer_key=ck_4b702525b50e40ab92e8b775814dedb4935e51b0";
+  String get consumerSecret => "&consumer_secret=cs_a6d6a9c41dc536b3218e4df282ad202faf1ab244";
 
 }
