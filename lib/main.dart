@@ -4,6 +4,7 @@ import 'package:crunchbox/features/account/data/repositories/account_repository_
 import 'package:crunchbox/features/account/domain/repositories/account_repository.dart';
 import 'package:crunchbox/features/account/presentation/bloc/account_bloc.dart';
 import 'package:crunchbox/features/account/presentation/pages/login_page.dart';
+import 'package:crunchbox/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:crunchbox/features/product/data/datasources/remote_supabase_product_data_source.dart';
 import 'package:crunchbox/features/product/data/repositories/product_repository_impl.dart';
 import 'package:crunchbox/features/product/domain/repositories/product_repository.dart';
@@ -60,6 +61,7 @@ class MyApp extends StatelessWidget {
               productRepository: context.read<ProductRepository>(),
             )..add(FetchProductsAndCategories()), // Initial fetch
           ),
+          BlocProvider(create: (context) => CartBloc())
         ],
         child: GetMaterialApp(
           debugShowCheckedModeBanner: false,

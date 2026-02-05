@@ -1,8 +1,13 @@
+import 'package:crunchbox/features/cart/presentation/bloc/cart_bloc.dart';
+import 'package:crunchbox/features/cart/presentation/pages/cart_page.dart';
 import 'package:crunchbox/features/product/domain/entities/product.dart';
 import 'package:crunchbox/features/product/presentation/widgets/animated_background_gradient.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 
 import '../../../../core/themes/colors.dart';
+import '../widgets/custom_button_with_border.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final Product product;
@@ -29,6 +34,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        actions: [
+          IconButton(onPressed: () {
+            Get.to(() => CartPage());
+          }, icon: Icon(Icons.shopping_cart))
+        ],
       ),
       body: Stack(
         children: [
@@ -53,10 +63,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   children: [
                     Text(
                       widget.product.name,
-                      style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 22.0,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     SizedBox(width: 10),
-                    Image.asset('assets/non_veg.png', width: 26, height: 26,),
+                    Image.asset('assets/non_veg.png', width: 26, height: 26),
                   ],
                 ),
               ),
@@ -135,38 +148,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: ElevatedButton.icon(
-                        onPressed: () {},
-                        label: Text(
-                          'ADD TO CART',
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                        icon: Icon(
-                          Icons.shopping_bag,
-                          color: AppColors.primary,
-                          size: 20,
-                        ),
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(
-                            AppColors.background,
-                          ),
-                          shape: WidgetStatePropertyAll(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadiusGeometry.circular(8.0),
-                              side: BorderSide(
-                                color: AppColors.primary,
-                                style: BorderStyle.solid,
-                                width: 0.5,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      child: CustomButtonWithBorder(buttonText:
+                      'ADD TO CART', iconData: Icons.shopping_cart, onPressed: () {
+                        context.read<CartBloc>().add(
+                          AddToCart(product: widget.product),
+                        );
+                      }),
                     ),
                   ),
                 ],
